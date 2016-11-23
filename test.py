@@ -6,7 +6,14 @@ import urllib2
 import re
 from pprint import pprint
 
-url="https://2ip.ru"
+url="https://btc-e.nz/api/3/info"
+headers = {    # common HTTPS headers
+        'Accept': 'application/json',
+        'Accept-Charset': 'utf-8',
+        'Accept-Encoding': 'identity',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+        }
 proxy1 = {'address': 'https://62.109.2.4:3129', 'account': 'Buffa4ok:lAs5ok7y'}
 proxy2 = {'address': 'https://27.218.87.17:8998'}
 
@@ -33,8 +40,12 @@ def add_proxy(proxy):
 
 
 def send_request(url, proxy=None):
+    global headers
+    hdr = {'User-Agent': 'Mozilla/5.0'}    
     try:
-        req = urllib2.Request(url)
+        req = urllib2.Request(url, headers=hdr)
+        for key,val in headers.items():
+            req.add_header(key,val)
         if proxy is not None:
             add_proxy(proxy)
         res = urllib2.urlopen(req)
@@ -42,12 +53,10 @@ def send_request(url, proxy=None):
         print "Не могу открыть ",url
         print ex
     else:
-        re_need_content = re.compile('<big id="d_clip_button".*')
         content = res.read()
         pprint(dict(res.info()))
-        need_content = re_need_content.search(content)    
-        if need_content is not None:
-            print need_content.group()
+        print "-"*60
+        print content
         print "-"*60
         
 send_request(url)
@@ -56,3 +65,4 @@ send_request(url)
 
     
     
+
